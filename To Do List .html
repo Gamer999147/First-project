@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Do It.</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ─── RESET & ROOT ─────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #09071a;
+    --surface:   #110d2b;
+    --card:      rgba(255,255,255,0.045);
+    --card-h:    rgba(255,255,255,0.075);
+    --border:    rgba(255,255,255,0.08);
+    --border-h:  rgba(167,139,250,0.35);
+    --primary:   #7c3aed;
+    --primary-l: #a78bfa;
+    --accent:    #c084fc;
+    --glow:      rgba(124,58,237,0.45);
+    --glow-s:    rgba(192,132,252,0.2);
+    --done:      #4ade80;
+    --done-d:    #16a34a;
+    --red:       #f87171;
+    --text:      #ede9fe;
+    --muted:     #7c6fa0;
+    --faint:     #352d56;
+  }
+
+  html { height: 100%; }
+
+  body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── BACKGROUND ORBS ─────────────────────────────── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: .55;
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+  .orb-1 { width: 420px; height: 420px; background: radial-gradient(circle, #4c1d95, transparent 70%); top: -100px; left: -100px; animation-delay: 0s; }
+  .orb-2 { width: 320px; height: 320px; background: radial-gradient(circle, #6d28d9, transparent 70%); top: 30%; right: -80px; animation-delay: -5s; }
+  .orb-3 { width: 260px; height: 260px; background: radial-gradient(circle, #7e22ce, transparent 70%); bottom: 5%; left: 10%; animation-delay: -9s; }
+
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(30px, 40px) scale(1.08); }
+  }
+
+  /* ─── GRAIN OVERLAY ──────────────────────────────── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: .028;
+  }
+
+  /* ─── WRAPPER ─────────────────────────────────────── */
+  .wrap {
+    position: relative; z-index: 2;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────── */
+  header {
+    margin-bottom: 36px;
+    animation: slideDown .6s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes slideDown {
+    from { opacity:0; transform: translateY(-20px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 4px;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 9vw, 52px);
+    font-weight: 400;
+    line-height: 1;
+    background: linear-gradient(135deg, #ede9fe 20%, #c084fc 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  h1 em { font-style: italic; color: var(--accent); -webkit-text-fill-color: var(--accent); }
+
+  .date-label {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 4px;
+    font-weight: 500;
+  }
+
+  /* ─── PROGRESS BAR ───────────────────────────────── */
+  .progress-wrap {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: var(--faint);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 99px;
+    transition: width .5s cubic-bezier(.22,1,.36,1);
+    box-shadow: 0 0 10px var(--glow);
+    width: 0%;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    font-weight: 500;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* ─── INPUT ROW ──────────────────────────────────── */
+  .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    animation: slideDown .6s .1s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .task-input {
+    flex: 1;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    outline: none;
+    transition: border-color .25s, box-shadow .25s, background .25s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  .task-input::placeholder { color: var(--muted); }
+  .task-input:focus {
+    border-color: var(--primary-l);
+    background: rgba(255,255,255,0.07);
+    box-shadow: 0 0 0 3px rgba(124,58,237,.18), 0 0 24px rgba(124,58,237,.12);
+  }
+
+  .add-btn {
+    width: 50px; height: 50px;
+    background: linear-gradient(135deg, var(--primary), #9333ea);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 20px var(--glow);
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .add-btn:hover { transform: scale(1.06); box-shadow: 0 6px 28px var(--glow); }
+  .add-btn:active { transform: scale(.94); }
+  .add-btn svg { width: 22px; height: 22px; stroke: #fff; }
+
+  /* ─── FILTER PILLS ───────────────────────────────── */
+  .filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    animation: slideDown .6s .18s cubic-bezier(.22,1,.36,1) both;
+  }
+  .filter-btn {
+    padding: 6px 16px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: rgba(124,58,237,.18);
+    border-color: var(--primary-l);
+    color: var(--primary-l);
+  }
+  .filter-btn.active { box-shadow: 0 0 12px rgba(124,58,237,.2); }
+
+  /* ─── TASK LIST ──────────────────────────────────── */
+  #task-list { list-style: none; }
+
+  /* ─── EMPTY STATE ────────────────────────────────── */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    animation: fadeIn .4s ease both;
+  }
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 14px;
+    display: block;
+    opacity: .5;
+  }
+  .empty p { font-size: 15px; line-height: 1.6; }
+
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  /* ─── TASK ITEM ──────────────────────────────────── */
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 15px 16px;
+    margin-bottom: 10px;
+    transition: background .2s, border-color .2s, transform .2s, box-shadow .2s;
+    animation: taskIn .4s cubic-bezier(.22,1,.36,1) both;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .task-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(167,139,250,.04), transparent);
+    pointer-events: none;
+  }
+  .task-item:hover {
+    background: var(--card-h);
+    border-color: var(--border-h);
+    transform: translateX(3px);
+    box-shadow: -3px 0 0 var(--primary), 0 4px 24px rgba(0,0,0,.3);
+  }
+
+  @keyframes taskIn {
+    from { opacity:0; transform: translateY(16px) scale(.97); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+
+  /* Remove animation */
+  .task-item.removing {
+    animation: taskOut .35s cubic-bezier(.55,0,1,.45) forwards;
+    pointer-events: none;
+  }
+  @keyframes taskOut {
+    to { opacity:0; transform: translateX(50px) scale(.9); max-height:0; margin:0; padding:0; border-width:0; }
+  }
+
+  /* ─── CHECKBOX ───────────────────────────────────── */
+  .check-wrap {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    position: relative;
+    cursor: pointer;
+  }
+  .check-wrap input[type="checkbox"] {
+    position: absolute; opacity: 0; width: 0; height: 0;
+  }
+  .check-box {
+    width: 24px; height: 24px;
+    border-radius: 8px;
+    border: 2px solid var(--faint);
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .2s, background .2s, box-shadow .2s, transform .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .check-wrap:hover .check-box {
+    border-color: var(--primary-l);
+    box-shadow: 0 0 10px rgba(124,58,237,.3);
+  }
+  .check-wrap input:checked + .check-box {
+    background: linear-gradient(135deg, var(--done-d), var(--done));
+    border-color: var(--done);
+    box-shadow: 0 0 14px rgba(74,222,128,.35);
+    transform: scale(1.08);
+    animation: pop .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes pop {
+    0%  { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100%{ transform: scale(1.08); }
+  }
+  .check-icon {
+    width: 13px; height: 13px;
+    stroke: #fff;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity .2s .05s, transform .2s .05s cubic-bezier(.34,1.56,.64,1);
+  }
+  .check-wrap input:checked + .check-box .check-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+  /* Ripple on check */
+  .check-box::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 8px;
+    background: rgba(74,222,128,.25);
+    opacity: 0;
+    transform: scale(0);
+    transition: transform .3s, opacity .3s;
+  }
+  .check-wrap input:checked + .check-box::after {
+    transform: scale(2.5);
+    opacity: 0;
+    animation: ripple .35s ease forwards;
+  }
+  @keyframes ripple {
+    0%  { transform: scale(0.5); opacity: 1; }
+    100%{ transform: scale(2.5); opacity: 0; }
+  }
+
+  /* ─── TASK TEXT ──────────────────────────────────── */
+  .task-text {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.45;
+    word-break: break-word;
+    transition: color .3s;
+    position: relative;
+  }
+  .task-text::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    width: 0; height: 1.5px;
+    background: var(--muted);
+    transform: translateY(-50%);
+    transition: width .4s cubic-bezier(.22,1,.36,1);
+    border-radius: 99px;
+  }
+  .task-item.done .task-text {
+    color: var(--muted);
+  }
+  .task-item.done .task-text::after {
+    width: 100%;
+  }
+
+  /* ─── DELETE BUTTON ──────────────────────────────── */
+  .del-btn {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    border: 1.5px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(.8);
+    transition: opacity .2s, transform .2s, color .2s, background .2s, border-color .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .task-item:hover .del-btn {
+    opacity: 1;
+    transform: scale(1);
+  }
+  /* Always visible on mobile */
+  @media (hover: none) {
+    .del-btn { opacity: .45; transform: scale(1); }
+  }
+  .del-btn:hover {
+    color: var(--red);
+    background: rgba(248,113,113,.1);
+    border-color: rgba(248,113,113,.25);
+  }
+  .del-btn:active { transform: scale(.88); }
+  .del-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ─── CLEAR DONE ─────────────────────────────────── */
+  .clear-wrap {
+    text-align: center;
+    margin-top: 24px;
+  }
+  .clear-btn {
+    background: transparent;
+    border: 1.5px solid var(--faint);
+    color: var(--muted);
+    padding: 9px 22px;
+    border-radius: 99px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: .5px;
+    transition: all .2s;
+    display: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .clear-btn:hover {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(248,113,113,.07);
+  }
+  .clear-btn.visible { display: inline-block; animation: fadeIn .3s ease; }
+
+  /* ─── SCROLLBAR ──────────────────────────────────── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--faint); border-radius: 99px; }
+
+  /* ─── CONFETTI BURST ─────────────────────────────── */
+  .confetti-dot {
+    position: fixed;
+    width: 7px; height: 7px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: confettiFall .8s ease forwards;
+  }
+  @keyframes confettiFall {
+    0%   { opacity:1; transform: translate(0,0) rotate(0deg) scale(1); }
+    100% { opacity:0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(.4); }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="wrap">
+
+  <header>
+    <div class="header-top">
+      <h1>Do <em>it.</em></h1>
+      <span class="date-label" id="date-label"></span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0 / 0</div>
+    </div>
+  </header>
+
+  <!-- Input -->
+  <div class="input-row">
+    <input
+      type="text"
+      class="task-input"
+      id="task-input"
+      placeholder="What needs doing…"
+      maxlength="120"
+      autocomplete="off"
+      autocorrect="off"
+      spellcheck="false"
+    />
+    <button class="add-btn" id="add-btn" aria-label="Add task">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="active">Active</button>
+    <button class="filter-btn" data-filter="done">Done</button>
+  </div>
+
+  <!-- List -->
+  <ul id="task-list"></ul>
+
+  <!-- Clear completed -->
+  <div class="clear-wrap">
+    <button class="clear-btn" id="clear-btn">Clear completed</button>
+  </div>
+
+</div>
+
+<script>
+  // ── STATE ──────────────────────────────────────────
+  let tasks   = JSON.parse(localStorage.getItem('doit-tasks') || '[]');
+  let filter  = 'all';
+  let nextId  = parseInt(localStorage.getItem('doit-nextid') || '1', 10);
+
+  // ── DATE ───────────────────────────────────────────
+  const dateEl = document.getElementById('date-label');
+  dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+
+  // ── PERSIST ────────────────────────────────────────
+  function save() {
+    localStorage.setItem('doit-tasks', JSON.stringify(tasks));
+    localStorage.setItem('doit-nextid', nextId);
+  }
+
+  // ── ADD TASK ───────────────────────────────────────
+  const input   = document.getElementById('task-input');
+  const addBtn  = document.getElementById('add-btn');
+
+  function addTask() {
+    const text = input.value.trim();
+    if (!text) { input.focus(); shakInput(); return; }
+    tasks.unshift({ id: nextId++, text, done: false });
+    save();
+    input.value = '';
+    input.focus();
+    if (filter === 'done') setFilter('all');
+    else render();
+  }
+
+  function shakInput() {
+    input.style.animation = 'none';
+    input.offsetHeight; // reflow
+    input.style.animation = 'shake .3s ease';
+    input.addEventListener('animationend', () => input.style.animation = '', { once:true });
+  }
+
+  addBtn.addEventListener('click', addTask);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+  // ── TOGGLE ────────────────────────────────────────
+  function toggleTask(id) {
+    const t = tasks.find(t => t.id === id);
+    if (!t) return;
+    t.done = !t.done;
+    save();
+    renderStats();
+    if (filter !== 'all') render();
+    else {
+      // just update the item in place
+      const item = document.querySelector(`[data-id="${id}"]`);
+      if (item) {
+        item.classList.toggle('done', t.done);
+        updateClearBtn();
+      }
+    }
+    if (t.done) burstConfetti(id);
+  }
+
+  // ── DELETE ────────────────────────────────────────
+  function deleteTask(id) {
+    const item = document.querySelector(`[data-id="${id}"]`);
+    if (item) {
+      item.classList.add('removing');
+      item.addEventListener('animationend', () => {
+        tasks = tasks.filter(t => t.id !== id);
+        save();
+        render();
+      }, { once: true });
+    }
+  }
+
+  // ── CLEAR DONE ────────────────────────────────────
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    const doneIds = tasks.filter(t => t.done).map(t => t.id);
+    doneIds.forEach(id => {
+      const item = document.querySelector(`[data-id="${id}"]`);
+      if (item) item.classList.add('removing');
+    });
+    setTimeout(() => {
+      tasks = tasks.filter(t => !t.done);
+      save();
+      render();
+    }, 380);
+  });
+
+  // ── FILTERS ───────────────────────────────────────
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => setFilter(btn.dataset.filter));
+  });
+
+  function setFilter(f) {
+    filter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+    render();
+  }
+
+  // ── RENDER ────────────────────────────────────────
+  const list = document.getElementById('task-list');
+
+  function filteredTasks() {
+    if (filter === 'active') return tasks.filter(t => !t.done);
+    if (filter === 'done')   return tasks.filter(t => t.done);
+    return tasks;
+  }
+
+  function render() {
+    const visible = filteredTasks();
+    list.innerHTML = '';
+
+    if (visible.length === 0) {
+      const emptyMsgs = {
+        all:    ['✨', 'Nothing here yet.', 'Add something above to get started.'],
+        active: ['🎉', 'All caught up!', 'No active tasks — enjoy the moment.'],
+        done:   ['📋', 'Nothing done yet.', 'Complete a task to see it here.']
+      };
+      const [icon, t, s] = emptyMsgs[filter];
+      list.innerHTML = `
+        <li class="empty">
+          <span class="empty-icon">${icon}</span>
+          <p><strong>${t}</strong><br><span style="font-size:13px;opacity:.7;">${s}</span></p>
+        </li>`;
+    } else {
+      visible.forEach((task, i) => {
+        const li = makeTaskEl(task, i);
+        list.appendChild(li);
+      });
+    }
+
+    renderStats();
+    updateClearBtn();
+  }
+
+  function makeTaskEl(task, index) {
+    const li = document.createElement('li');
+    li.className = 'task-item' + (task.done ? ' done' : '');
+    li.dataset.id = task.id;
+    li.style.animationDelay = `${index * 0.04}s`;
+
+    li.innerHTML = `
+      <label class="check-wrap" title="${task.done ? 'Mark incomplete' : 'Mark complete'}">
+        <input type="checkbox" ${task.done ? 'checked' : ''} />
+        <div class="check-box">
+          <svg class="check-icon" viewBox="0 0 13 10">
+            <polyline points="1.5 5.5 4.5 8.5 11.5 1.5"/>
+          </svg>
+        </div>
+      </label>
+      <span class="task-text">${escHtml(task.text)}</span>
+      <button class="del-btn" aria-label="Delete task" title="Delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14H6L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4h6v2"/>
+        </svg>
+      </button>
+    `;
+
+    li.querySelector('input[type="checkbox"]').addEventListener('change', () => toggleTask(task.id));
+    li.querySelector('.del-btn').addEventListener('click', (e) => { e.stopPropagation(); deleteTask(task.id); });
+
+    return li;
+  }
+
+  // ── STATS ──────────────────────────────────────────
+  function renderStats() {
+    const total = tasks.length;
+    const done  = tasks.filter(t => t.done).length;
+    const pct   = total === 0 ? 0 : Math.round((done / total) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = `${done} / ${total}`;
+  }
+
+  function updateClearBtn() {
+    const hasDone = tasks.some(t => t.done);
+    document.getElementById('clear-btn').classList.toggle('visible', hasDone);
+  }
+
+  // ── CONFETTI ──────────────────────────────────────
+  const COLORS = ['#a78bfa','#c084fc','#4ade80','#818cf8','#f472b6','#facc15'];
+
+  function burstConfetti(id) {
+    const el = document.querySelector(`[data-id="${id}"] .check-box`);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top  + rect.height / 2;
+
+    for (let i = 0; i < 10; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'confetti-dot';
+      const angle = (Math.random() * 360) * Math.PI / 180;
+      const dist  = 40 + Math.random() * 60;
+      dot.style.cssText = `
+        left: ${cx}px; top: ${cy}px;
+        background: ${COLORS[i % COLORS.length]};
+        --dx: ${Math.cos(angle)*dist}px;
+        --dy: ${Math.sin(angle)*dist}px;
+        --rot: ${Math.random()*360}deg;
+        animation-delay: ${i*0.03}s;
+      `;
+      document.body.appendChild(dot);
+      dot.addEventListener('animationend', () => dot.remove());
+    }
+  }
+
+  // ── UTILS ──────────────────────────────────────────
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── SHAKE KEYFRAME (injected) ─────────────────────
+  const style = document.createElement('style');
+  style.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}`;
+  document.head.appendChild(style);
+
+  // ── INIT ──────────────────────────────────────────
+  render();
+</script>
+</body>
+</html>
