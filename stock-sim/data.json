@@ -1,0 +1,12 @@
+{
+  "users": {},
+  "market": {
+    "stocks": [
+      { "symbol": "AAPL", "name": "Apple", "price": 175.00 },
+      { "symbol": "GOOGL", "name": "Alphabet", "price": 135.00 },
+      { "symbol": "AMZN", "name": "Amazon", "price": 110.00 },
+      { "symbol": "TSLA", "name": "Tesla", "price": 220.00 },
+      { "symbol": "NFLX", "name": "Netflix", "price": 320.00 }
+    ]
+  }
+}

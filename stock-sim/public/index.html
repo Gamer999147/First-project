@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>StockSim — Practice Trading</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>StockSim</h1>
+        <p class="tag">A friendly trading simulator for learning</p>
+      </header>
+
+      <main>
+        <section id="login" class="card">
+          <h2>Get started</h2>
+          <input id="username" placeholder="Enter a nickname (e.g. alex123)" />
+          <button id="btnLogin">Start</button>
+        </section>
+
+        <section id="dashboard" class="hidden">
+          <div class="row">
+            <div class="card" id="marketCard">
+              <h3>Market</h3>
+              <table id="marketTable">
+                <thead><tr><th>Symbol</th><th>Name</th><th>Price</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="card" id="portfolioCard">
+              <h3>Your Portfolio</h3>
+              <div id="cash">Cash: $0.00</div>
+              <table id="holdingsTable">
+                <thead><tr><th>Symbol</th><th>Qty</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card" id="tradeCard">
+            <h3>Quick Trade</h3>
+            <select id="tradeSymbol"></select>
+            <input id="tradeQty" type="number" value="1" min="1" />
+            <button id="buyBtn">Buy</button>
+            <button id="sellBtn">Sell</button>
+            <div id="tradeMsg" class="muted"></div>
+          </div>
+
+          <div class="card" id="historyCard">
+            <h3>History</h3>
+            <ul id="historyList"></ul>
+          </div>
+
+          <div class="card" id="leaderboardCard">
+            <h3>Leaderboard</h3>
+            <table id="leaderboardTable">
+              <thead><tr><th>Rank</th><th>User</th><th>Value</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <small>Designed for learning: no real money, just practice.</small>
+      </footer>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+:root{--bg:#f4f7fb;--card:#ffffff;--accent:#2b6ef6;--muted:#666}
+*{box-sizing:border-box;font-family:Inter,Arial,Helvetica,sans-serif}
+body{margin:0;background:var(--bg);color:#111}
+#app{max-width:980px;margin:28px auto;padding:16px}
+header{display:flex;align-items:center;gap:12px}
+header h1{margin:0}
+.tag{color:var(--muted);margin:0}
+.card{background:var(--card);padding:12px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px}
+.row{display:flex;gap:12px}
+#marketCard{flex:2}
+#portfolioCard{flex:1}
+table{width:100%;border-collapse:collapse}
+th,td{padding:6px 8px;text-align:left;border-bottom:1px solid #eee}
+button{background:var(--accent);color:#fff;border:none;padding:8px 10px;border-radius:6px;cursor:pointer}
+button.secondary{background:#666}
+.hidden{display:none}
+#tradeCard input,#tradeCard select{padding:6px;margin-right:6px}
+.muted{color:var(--muted);margin-top:8px}
+footer{text-align:center;color:var(--muted);margin-top:12px}
